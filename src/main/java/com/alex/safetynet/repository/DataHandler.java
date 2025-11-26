@@ -24,6 +24,8 @@ public class DataHandler {
     }
 
     public Data getData() { return data; }
+
+    public void save(){}
 }
 
 

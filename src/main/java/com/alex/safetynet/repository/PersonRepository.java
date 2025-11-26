@@ -29,4 +29,37 @@ public class PersonRepository {
                 .findFirst() // Optional<Person>
                 .orElseGet(() -> new Person());
     }
+
+    public Person savePerson(Person person) {
+        dataHandler.getData().getPersons().add(person);
+        return person;
+    }
+
+    public String updatePerson(String firstName, String lastName, Person updatedPerson) {
+        List<Person> persons = dataHandler.getData().getPersons();
+
+        for (Person p : persons) {
+            if (p.getFirstName().equalsIgnoreCase(firstName.trim()) &&
+                    p.getLastName().equalsIgnoreCase(lastName.trim())) {
+                dataHandler.save();
+                return "Person updated to " + updatedPerson.getFirstName() + " " + updatedPerson.getLastName();
+            }
+        }
+        return "Person " + firstName + " " + lastName + " not found";
+    }
+
+
+    public void deletePerson(String firstName, String lastName) {
+        List<Person> persons = dataHandler.getData().getPersons();
+
+        boolean exists = persons.stream().anyMatch(p ->
+                p.getFirstName().equalsIgnoreCase(firstName.trim()) &&
+                        p.getLastName().equalsIgnoreCase(lastName.trim()));
+
+        persons.removeIf(p ->
+                p.getFirstName().equalsIgnoreCase(firstName.trim()) &&
+                        p.getLastName().equalsIgnoreCase(lastName.trim()));
+
+        dataHandler.save();
+    }
 }

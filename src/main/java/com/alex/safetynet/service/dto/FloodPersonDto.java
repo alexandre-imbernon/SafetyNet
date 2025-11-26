@@ -1,6 +1,5 @@
 package com.alex.safetynet.service.dto;
 
-import com.alex.safetynet.model.Person;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -1,24 +1,28 @@
 package com.alex.safetynet.controller;
 
+import com.alex.safetynet.model.Person;
+import com.alex.safetynet.repository.PersonRepository;
 import com.alex.safetynet.service.PersonService;
 import com.alex.safetynet.service.dto.ChildAlertDto;
 import com.alex.safetynet.service.dto.PersonInfoDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-public class PersonsController {
+    @RestController
+    public class PersonsController {
 
-    private final PersonService personService;
-
-    public PersonsController(PersonService personService) {
-        this.personService = personService;
-    }
+        private final PersonService personService;
+        private final PersonRepository personRepository;
+        public PersonsController(PersonService personService, PersonRepository personRepository) {
+            this.personService = personService;
+            this.personRepository = personRepository;
+        }
 
     // Get mail by city
     @GetMapping("/communityEmail")
-    public List<String> findAllEmails(@RequestParam(name = "city")String city) {
+    public List<String> findAllEmails(@RequestParam(name = "city") String city) {
         return personService.findAllEmails(city);
     }
 
@@ -26,10 +30,9 @@ public class PersonsController {
     public List<String> firestationNumber(String phone) {
         return personService.firestationNumbers(phone);
     } */
-
     @RequestMapping(value = "personInfo", method = RequestMethod.GET)
-    public List<PersonInfoDto> listOfPersonsWithMedicalRecords(@RequestParam String firstName, @RequestParam String lastName){
-         return this.personService.findAllPersonsWithMedicalRecords(firstName, lastName);
+    public List<PersonInfoDto> listOfPersonsWithMedicalRecords(@RequestParam String firstName, @RequestParam String lastName) {
+        return this.personService.findAllPersonsWithMedicalRecords(firstName, lastName);
     }
 
     @RequestMapping(value = "childAlert", method = RequestMethod.GET)
@@ -37,9 +40,25 @@ public class PersonsController {
         return this.personService.findAllChildsUnder18ByAddress(address);
     }
 
+    @GetMapping("/getPersons")
+    public List<Person> findAllPersons() {
+        return personService.findAllPersons();
+    }
 
+    @PostMapping("/addPerson")
+    public Person addPerson(@RequestBody Person person) {
+        return personRepository.savePerson(person);
+    }
 
+    @PutMapping("/updatePerson")
+    public String updatePerson(@RequestParam String firstName,
+                               @RequestParam String lastName,
+                               @RequestBody Person updatedPerson) {
+        return personRepository.updatePerson(firstName, lastName, updatedPerson);
+    }
 
-
-
+    @DeleteMapping("/deletePerson")
+    public void deletePerson(@RequestParam String firstName, @RequestParam String lastName) {
+        personRepository.deletePerson(firstName, lastName);
+    }
 }

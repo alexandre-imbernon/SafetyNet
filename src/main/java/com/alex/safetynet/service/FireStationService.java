@@ -6,13 +6,11 @@ import com.alex.safetynet.model.Person;
 import com.alex.safetynet.repository.FireStationRepository;
 import com.alex.safetynet.repository.MedicalRecordRepository;
 import com.alex.safetynet.repository.PersonRepository;
-import com.alex.safetynet.service.dto.FireStationDto;
-import com.alex.safetynet.service.dto.FloodDto;
-import com.alex.safetynet.service.dto.FloodPersonDto;
-import com.alex.safetynet.service.dto.PersonDto;
+import com.alex.safetynet.service.dto.*;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FireStationService {
@@ -26,19 +24,22 @@ public class FireStationService {
                               PersonRepository personRepository,
                               PersonService personService,
                               MedicalRecordRepository medicalRecordRepository) {
-    this.fireStationRepository = fireStationRepository;
-    this.personRepository = personRepository;
-    this.personService = personService;
-    this.medicalRecordRepository = medicalRecordRepository;
-    }
 
+        this.fireStationRepository = fireStationRepository;
+        this.personRepository = personRepository;
+        this.personService = personService;
+        this.medicalRecordRepository = medicalRecordRepository;
+    }
 
     public List<FireStation> allFireStations() {
         return fireStationRepository.findAllFireStations();
     }
 
-    // Récupérer une liste de numéros de téléphone par numéro de station
+    /**
+     * Récupère les numéros de téléphone des personnes couvertes par une station
+     */
     public List<String> findPhoneNumbersByStationNumber(int number) {
+
         List<String> result = new ArrayList<>();
         List<FireStation> fireStations = fireStationRepository.findAllFireStationsByNumber(number);
         List<Person> persons = personRepository.findAllPersons();
@@ -48,10 +49,10 @@ public class FireStationService {
                 result.add(person.getPhone());
             }
         }
+
         return result;
     }
 
-    // Vérifie si l'adresse de la personne correspond à une station
     private boolean personsContainsFirestationAddress(List<FireStation> fireStations, Person person) {
         for (FireStation fireStation : fireStations) {
             if (fireStation.getAddress().equals(person.getAddress())) {
@@ -77,19 +78,15 @@ public class FireStationService {
 
         int adultCount = 0;
         int childCount = 0;
-
         List<PersonDto> personDTOList = new ArrayList<>();
 
         for (Person p : personsCovered) {
 
-            MedicalRecord record = null;
-            for (MedicalRecord mr : personService.getMedicalRecords()) {
-                if (mr.getFirstName().equalsIgnoreCase(p.getFirstName()) &&
-                        mr.getLastName().equalsIgnoreCase(p.getLastName())) {
-                    record = mr;
-                    break;
-                }
-            }
+            MedicalRecord record = personService.getMedicalRecords().stream()
+                    .filter(mr -> mr.getFirstName().equalsIgnoreCase(p.getFirstName())
+                            && mr.getLastName().equalsIgnoreCase(p.getLastName()))
+                    .findFirst()
+                    .orElse(null);
 
             int age = (record != null) ? personService.computeAge(record.getBirthdate()) : 0;
 
@@ -111,6 +108,7 @@ public class FireStationService {
 
     public FloodDto getFoyersByStations(int number) {
 
+
         List<String> coveredAddresses = new ArrayList<>();
         for (FireStation fs : fireStationRepository.findAllFireStationsByNumber(number)) {
             coveredAddresses.add(fs.getAddress());
@@ -123,11 +121,10 @@ public class FireStationService {
             }
         }
 
-        List<FloodPersonDto> FloodPersonDTO = new ArrayList<>();
-
+        List<FloodPersonDto> floodPersonDTO = new ArrayList<>();
 
         for (Person p : personsCovered) {
-            // Récupérer le record via ton repo
+
             MedicalRecord record = medicalRecordRepository.findMedicalWithFirstNameAndLastName(
                     p.getFirstName(),
                     p.getLastName()
@@ -141,15 +138,57 @@ public class FireStationService {
             dto.setPhone(p.getPhone());
             dto.setAge(age);
 
+
             if (record != null) {
                 dto.setAllergies(record.getAllergies().toArray(new String[0]));
                 dto.setMedications(record.getMedications().toArray(new String[0]));
             }
 
-            FloodPersonDTO.add(dto);
-
+            floodPersonDTO.add(dto);
         }
-        return new FloodDto(FloodPersonDTO);
 
+        return new FloodDto(coveredAddresses.get(0), floodPersonDTO);
     }
+
+
+    public List<FloodDto2> flood(List<Integer> stationsNumbers) {
+        return stationsNumbers.stream()
+                .flatMap(n -> fireStationRepository.findAllFireStationsByNumber(n).stream())
+                .map(s -> FloodDto2.builder()
+                        .address(s.getAddress())
+                        .people(getPeopleByAddress(s.getAddress()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+    public List<FloodDto2.PersonDto2> getPeopleByAddress(String address) {
+        return personRepository.findAllPersonByAddress(address).stream()
+                .map(p -> mapToPerson(p))
+                .collect(Collectors.toList());
+    }
+
+
+    public FloodDto2.PersonDto2 mapToPerson(Person person) {
+        MedicalRecord record = medicalRecordRepository
+                .findMedicalWithFirstNameAndLastName(person.getFirstName(), person.getLastName());
+
+        return FloodDto2.PersonDto2.builder()
+                .lastName(person.getLastName())
+                .phoneNumber(person.getPhone())
+                .age(MedicalRecordService.AgeUtils.computeAge(record.getBirthdate()))   // utilisation directe
+                .medications(record.getMedications().toArray(new String[0]))
+                .allergies(record.getAllergies().toArray(new String[0]))
+                .build();
+    }
+
+
+
+
+
+
+
+
+
+
 }

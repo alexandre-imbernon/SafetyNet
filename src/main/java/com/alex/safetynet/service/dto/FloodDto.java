@@ -11,7 +11,8 @@ public class FloodDto {
     private String address;
     private List<FloodPersonDto> foyers;
 
-    public FloodDto(List<FloodPersonDto> foyers) {
+    public FloodDto(String address, List<FloodPersonDto> foyers) {
+        this.address = address;
         this.foyers = foyers;
     }
 }

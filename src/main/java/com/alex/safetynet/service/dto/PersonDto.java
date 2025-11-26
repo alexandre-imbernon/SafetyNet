@@ -3,7 +3,6 @@ package com.alex.safetynet.service.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 public class PersonDto {

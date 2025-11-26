@@ -4,6 +4,7 @@ import com.alex.safetynet.model.FireStation;
 import com.alex.safetynet.service.FireStationService;
 import com.alex.safetynet.service.dto.FireStationDto;
 import com.alex.safetynet.service.dto.FloodDto;
+import com.alex.safetynet.service.dto.FloodDto2;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -38,6 +39,11 @@ public class FireStationsController {
     @RequestMapping(value = "flood/stations", method = RequestMethod.GET)
     public FloodDto foyersListByFireStation(@RequestParam(name = "stations") int number){
         return this.fireStationService.getFoyersByStations(number);
+    }
+
+    @RequestMapping(value = "/flood/stations2", method = RequestMethod.GET)
+    public List<FloodDto2> flood(@RequestParam(name = "stations") List<Integer> numbers) {
+        return this.fireStationService.flood(numbers);
     }
 
 
