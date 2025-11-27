@@ -117,4 +117,6 @@ public class PersonService {
 
    public List<MedicalRecord> getMedicalRecords() {
     return medicalRecordRepository.findAllMedicalRecords();}
+
+
 }

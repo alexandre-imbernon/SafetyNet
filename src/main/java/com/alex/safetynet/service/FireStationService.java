@@ -3,6 +3,7 @@ package com.alex.safetynet.service;
 import com.alex.safetynet.model.FireStation;
 import com.alex.safetynet.model.MedicalRecord;
 import com.alex.safetynet.model.Person;
+import com.alex.safetynet.repository.DataHandler;
 import com.alex.safetynet.repository.FireStationRepository;
 import com.alex.safetynet.repository.MedicalRecordRepository;
 import com.alex.safetynet.repository.PersonRepository;
@@ -150,7 +151,6 @@ public class FireStationService {
         return new FloodDto(coveredAddresses.get(0), floodPersonDTO);
     }
 
-
     public List<FloodDto2> flood(List<Integer> stationsNumbers) {
         return stationsNumbers.stream()
                 .flatMap(n -> fireStationRepository.findAllFireStationsByNumber(n).stream())
@@ -161,13 +161,11 @@ public class FireStationService {
                 .collect(Collectors.toList());
     }
 
-
     public List<FloodDto2.PersonDto2> getPeopleByAddress(String address) {
         return personRepository.findAllPersonByAddress(address).stream()
                 .map(p -> mapToPerson(p))
                 .collect(Collectors.toList());
     }
-
 
     public FloodDto2.PersonDto2 mapToPerson(Person person) {
         MedicalRecord record = medicalRecordRepository
@@ -182,13 +180,53 @@ public class FireStationService {
                 .build();
     }
 
+    public List<FireDto> getFireDtoByAddress(String address) {
+//Les trois liste, on à besoin de toutes les donnes du JSON
+        List<FireStation> fireStations = DataHandler.getData().getFirestations();
+        List<MedicalRecord> medicalRecords = DataHandler.getData().getMedicalRecords();
+        List<Person> persons = DataHandler.getData().getPersons();
+// Liste qui contiendra un FireDto par personne habitant à l'adresse
+        List<FireDto> fireDtos = new ArrayList<>();
 
+// Parcours de toutes les fire stations pour trouver celle de l'adresse
+        for (FireStation fs : fireStations) {
 
+// Si la fire station correspond à l'adresse recherchée
+            if (fs.getAddress().equals(address)) {
+                String stationNumber = fs.getStation();
+//sauvegarde ce numéro dans une variable temporaire
 
+// Parcours de toutes les personnes pour trouver celles à cette adresse
+                for (Person p : persons) {
+// Si la personne habite à l'adresse recherchée
+                    if (p.getAddress().equals(address)) {
 
+// Création d'un nouveau DTO pour cette personne
+                        FireDto dto = new FireDto();
 
+                        dto.setStation(stationNumber);
+                        dto.setPhoneNumber(p.getPhone());
+                        dto.setFirstName(p.getFirstName());
+                        dto.setLastName(p.getLastName());
 
+// Parcours des dossiers médicaux pour trouver celui de cette personne
+                        for (MedicalRecord mr : medicalRecords) {
 
+// Si le dossier médical correspond à la personne
+                            if (p.getFirstName().equals(mr.getFirstName()) &&
+                                    p.getLastName().equals(mr.getLastName())) {
+                                dto.setAge(personService.computeAge(mr.getBirthdate()));
+                                dto.setAllergies(mr.getAllergies());
+                                dto.setMedications(mr.getMedications());
+                            }
+                        }
 
-
+                        fireDtos.add(dto);
+                    }
+                }
+            }
+        }
+// Retour de la liste contenant tous les DTOs
+        return fireDtos;
+    }
 }

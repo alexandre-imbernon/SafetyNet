@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class DataHandler {
 
-    private final Data data;
+    private static Data data = new Data();
 
     public DataHandler() throws IOException {
         String temp = getFromRessources("data.json");
@@ -23,7 +23,7 @@ public class DataHandler {
         return IOUtils.toString(is, StandardCharsets.UTF_8);
     }
 
-    public Data getData() { return data; }
+    public static Data getData() {return data;}
 
     public void save(){}
 }

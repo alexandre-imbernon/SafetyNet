@@ -1,8 +1,10 @@
 package com.alex.safetynet.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public class Person {
 
     private String firstName;

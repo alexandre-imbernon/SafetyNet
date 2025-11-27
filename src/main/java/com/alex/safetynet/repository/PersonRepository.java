@@ -35,17 +35,21 @@ public class PersonRepository {
         return person;
     }
 
-    public String updatePerson(String firstName, String lastName, Person updatedPerson) {
+    public Person updatePerson(Person person, String firstName, String lastName) {
         List<Person> persons = dataHandler.getData().getPersons();
 
         for (Person p : persons) {
-            if (p.getFirstName().equalsIgnoreCase(firstName.trim()) &&
-                    p.getLastName().equalsIgnoreCase(lastName.trim())) {
-                dataHandler.save();
-                return "Person updated to " + updatedPerson.getFirstName() + " " + updatedPerson.getLastName();
+            if (p.getFirstName().equals(firstName)
+                    && p.getLastName().equals(lastName)) {
+
+                // Mettre à jour tous les champs sauf firstName et lastName
+           p.setFirstName(person.getFirstName());
+           p.setLastName(person.getLastName());
+                return p;
             }
         }
-        return "Person " + firstName + " " + lastName + " not found";
+
+        throw new IllegalArgumentException("Person not found");
     }
 
 

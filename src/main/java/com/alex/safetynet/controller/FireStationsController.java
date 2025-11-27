@@ -2,6 +2,7 @@ package com.alex.safetynet.controller;
 
 import com.alex.safetynet.model.FireStation;
 import com.alex.safetynet.service.FireStationService;
+import com.alex.safetynet.service.dto.FireDto;
 import com.alex.safetynet.service.dto.FireStationDto;
 import com.alex.safetynet.service.dto.FloodDto;
 import com.alex.safetynet.service.dto.FloodDto2;
@@ -41,10 +42,16 @@ public class FireStationsController {
         return this.fireStationService.getFoyersByStations(number);
     }
 
-    @RequestMapping(value = "/flood/stations2", method = RequestMethod.GET)
+    @RequestMapping(value = "flood/stations2", method = RequestMethod.GET)
     public List<FloodDto2> flood(@RequestParam(name = "stations") List<Integer> numbers) {
         return this.fireStationService.flood(numbers);
     }
+
+    @GetMapping(value = "fire")
+    public List<FireDto> getFireStation(@RequestParam String address) {
+        return this.fireStationService.getFireDtoByAddress(address);
+    }
+
 
 
 }

@@ -5,7 +5,6 @@ import com.alex.safetynet.repository.PersonRepository;
 import com.alex.safetynet.service.PersonService;
 import com.alex.safetynet.service.dto.ChildAlertDto;
 import com.alex.safetynet.service.dto.PersonInfoDto;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,10 +50,8 @@ import java.util.List;
     }
 
     @PutMapping("/updatePerson")
-    public String updatePerson(@RequestParam String firstName,
-                               @RequestParam String lastName,
-                               @RequestBody Person updatedPerson) {
-        return personRepository.updatePerson(firstName, lastName, updatedPerson);
+    public Person updatePerson(@RequestBody Person person, @RequestParam String firstName, @RequestParam String lastName) {
+        return personRepository.updatePerson(person, firstName, lastName);
     }
 
     @DeleteMapping("/deletePerson")
