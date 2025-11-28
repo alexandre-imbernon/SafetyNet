@@ -16,10 +16,10 @@ public class FireStationRepository {
 
     public FireStationRepository(DataHandler datahandler) {this.dataHandler = datahandler;}
 
-    public List<FireStation> findAllFireStations() {return dataHandler.getData().getFirestations();}
+    public List<FireStation> findAllFireStations() {return DataHandler.getData().getFirestations();}
 
     public List<FireStation> findAllFireStationsByNumber(Integer number) {
-    return dataHandler.getData().getFirestations().stream()
+    return DataHandler.getData().getFirestations().stream()
             .filter(f  -> f.getStation()
             .equals(number.toString())).collect(Collectors.toList());
     }

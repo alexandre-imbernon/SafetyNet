@@ -51,7 +51,4 @@ public class FireStationsController {
     public List<FireDto> getFireStation(@RequestParam String address) {
         return this.fireStationService.getFireDtoByAddress(address);
     }
-
-
-
 }

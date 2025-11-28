@@ -1,7 +1,6 @@
 package com.alex.safetynet.service.dto;
 
 import lombok.Data;
-
 import java.util.List;
 
 @Data
