@@ -5,9 +5,14 @@ import com.alex.safetynet.repository.PersonRepository;
 import com.alex.safetynet.service.PersonService;
 import com.alex.safetynet.service.dto.ChildAlertDto;
 import com.alex.safetynet.service.dto.PersonInfoDto;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+
+@Component
+
 
     @RestController
     public class PersonsController {

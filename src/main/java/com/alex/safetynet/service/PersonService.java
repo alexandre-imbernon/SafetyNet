@@ -30,6 +30,8 @@ public class PersonService {
         this.medicalRecordRepository = medicalRecordRepository;
     }
 
+
+
     // 🔹 Récupère toutes les personnes
     public List<Person> allPersons() {
         return personRepository.findAllPersons();
@@ -56,6 +58,7 @@ public class PersonService {
 
         if (person != null && medicalRecord != null) {
             PersonInfoDto dto = new PersonInfoDto();
+            dto.setFirstName(person.getFirstName());
             dto.setLastName(person.getLastName());
             dto.setAddress(person.getAddress());
             dto.setAge(Integer.parseInt(String.valueOf(computeAge(medicalRecord.getBirthdate()))));
@@ -117,6 +120,4 @@ public class PersonService {
 
    public List<MedicalRecord> getMedicalRecords() {
     return medicalRecordRepository.findAllMedicalRecords();}
-
-
 }

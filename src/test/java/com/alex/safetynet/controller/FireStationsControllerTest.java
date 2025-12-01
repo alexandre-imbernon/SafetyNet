@@ -37,8 +37,8 @@ public class FireStationsControllerTest {
         phoneNumbers.add("841-874-9888");
 
         List<Person> households = new ArrayList<>();
-        households.add(new Person("Sophia", "Zemicks", "892 Downing Ct", "Culver", "97451", "841-874-7878", "soph@email.com"));
-        households.add(new Person("Warren", "Zemicks", "892 Downing Ct", "Culver", "97451", "841-874-7512", "ward@email.com"));
+        households.add(new Person("Sophia", "892 Downing Ct", "Zemicks", "Culver", "97451", "841-874-7878", "soph@email.com"));
+        households.add(new Person("Warren", "892 Downing Ct", "Zemicks", "Culver", "97451", "841-874-7512", "ward@email.com"));
 
         ChildAlertDto childAlertDto = new ChildAlertDto("Zach", "Zemicks", "3", households);
     }
